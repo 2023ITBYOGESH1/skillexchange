@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Activity Log - Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="flex-between mb-3">
+        <h1><i class="fas fa-history"></i> Activity Log</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <!-- Recent Users -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3 class="card-title">Recent Users</h3>
+        </div>
+        <div class="card-body">
+            {% if recent_users %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in recent_users %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('main.user_profile', user_id=user.id) }}">{{ user.username }}</a>
+                                {% if user.is_admin %}<span class="badge badge-admin">Admin</span>{% endif %}
+                                {% if user.is_banned %}<span class="badge badge-danger">Banned</span>{% endif %}
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No users yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Recent Skills -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3 class="card-title">Recent Skills</h3>
+        </div>
+        <div class="card-body">
+            {% if recent_skills %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for skill in recent_skills %}
+                        <tr>
+                            <td><a href="{{ url_for('skills.detail', skill_id=skill.id) }}">{{ skill.title }}</a></td>
+                            <td><a href="{{ url_for('main.user_profile', user_id=skill.owner.id) }}">{{ skill.owner.username }}</a></td>
+                            <td>
+                                <span class="badge {% if skill.skill_type == 'offered' %}badge-success{% else %}badge-warning{% endif %}">
+                                    {{ skill.skill_type|title }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if skill.is_approved %}
+                                <span class="badge badge-success">Approved</span>
+                                {% else %}
+                                <span class="badge badge-warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ skill.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <a href="{{ url_for('skills.detail', skill_id=skill.id) }}" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No skills yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Recent Exchanges -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Recent Exchanges</h3>
+        </div>
+        <div class="card-body">
+            {% if recent_exchanges %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sender</th>
+                            <th>Receiver</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ex in recent_exchanges %}
+                        <tr>
+                            <td><a href="{{ url_for('main.user_profile', user_id=ex.sender_id) }}">{{ ex.sender.username }}</a></td>
+                            <td><a href="{{ url_for('main.user_profile', user_id=ex.receiver_id) }}">{{ ex.receiver.username }}</a></td>
+                            <td>
+                                <span class="badge {% if ex.status == 'pending' %}badge-warning{% elif ex.status == 'accepted' %}badge-success{% elif ex.status == 'rejected' %}badge-danger{% else %}badge-info{% endif %}">
+                                    {{ ex.status|title }}
+                                </span>
+                            </td>
+                            <td>{{ ex.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <a href="{{ url_for('exchange.request_detail', request_id=ex.id) }}" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No exchanges yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

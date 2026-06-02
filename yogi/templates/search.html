@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results - P2P{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h1 class="mb-3"><i class="fas fa-search"></i> Search Results</h1>
+    
+    {% if query or category or skill_type %}
+    <p class="text-muted mb-3">{% if query %}Searching for: <strong>{{ query }}</strong>{% endif %}
+    {% if category %} in <strong>{{ category }}</strong>{% endif %}
+    {% if skill_type %} type: <strong>{{ skill_type }}</strong>{% endif %}</p>
+    {% endif %}
+    
+    <!-- Users Results -->
+    {% if users %}
+    <h2 class="mb-2">Users</h2>
+    <div class="users-grid mb-4">
+        {% for user in users %}
+        <div class="user-card">
+            <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" alt="{{ user.username }}" class="user-avatar" onerror="this.src='https://via.placeholder.com/80'">
+            <h3><a href="{{ url_for('main.user_profile', user_id=user.id) }}">{{ user.username }}</a></h3>
+            <div class="user-rating">
+                {% for i in range(5) %}
+                    <i class="fas fa-star {% if i < user.rating|int %}filled{% endif %}"></i>
+                {% endfor %}
+            </div>
+            <p class="text-muted mt-1">{{ user.skills_count }} skills</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Skills Results -->
+    <h2 class="mb-2">Skills</h2>
+    {% if skills.items %}
+    <div class="skills-grid">
+        {% for skill in skills.items %}
+        <div class="skill-card">
+            <span class="skill-type {{ skill.skill_type }}">
+                {% if skill.skill_type == 'offered' %}<i class="fas fa-chalkboard-teacher"></i> Teaching{% else %}<i class="fas fa-book-open"></i> Learning{% endif %}
+            </span>
+            <h3><a href="{{ url_for('skills.detail', skill_id=skill.id) }}">{{ skill.title }}</a></h3>
+            <p>{{ skill.description }}</p>
+            <div class="skill-meta">
+                <span class="skill-category">{{ skill.category }}</span>
+                <span><i class="fas fa-user"></i> <a href="{{ url_for('main.user_profile', user_id=skill.owner.id) }}">{{ skill.owner.username }}</a></span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if skills.pages > 1 %}
+    <div class="pagination">
+        {% if skills.has_prev %}
+        <a href="{{ url_for('main.search', page=skills.prev_num, q=query, category=category, type=skill_type) }}" class="page-item">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+        
+        {% for page_num in skills.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+                <a href="{{ url_for('main.search', page=page_num, q=query, category=category, type=skill_type) }}" class="page-item {% if page_num == skills.page %}active{% endif %}">
+                    {{ page_num }}
+                </a>
+            {% else %}
+                <span class="page-item disabled">...</span>
+            {% endif %}
+        {% endfor %}
+        
+        {% if skills.has_next %}
+        <a href="{{ url_for('main.search', page=skills.next_num, q=query, category=category, type=skill_type) }}" class="page-item">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon"><i class="fas fa-search"></i></div>
+        <p>No results found.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Moderate Skills - Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="flex-between mb-3">
+        <h1><i class="fas fa-lightbulb"></i> Moderate Skills</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <!-- Filters -->
+    <div class="search-container">
+        <form method="GET" action="{{ url_for('admin.skills') }}" class="d-flex gap-2">
+            <select name="status" class="form-control" style="width: 150px;">
+                <option value="all" {% if status == 'all' %}selected{% endif %}>All</option>
+                <option value="approved" {% if status == 'approved' %}selected{% endif %}>Approved</option>
+                <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+            </select>
+            <select name="category" class="form-control" style="width: 200px;">
+                <option value="">All Categories</option>
+                <option value="technology" {% if category == 'technology' %}selected{% endif %}>Technology</option>
+                <option value="language" {% if category == 'language' %}selected{% endif %}>Languages</option>
+                <option value="music" {% if category == 'music' %}selected{% endif %}>Music</option>
+                <option value="art" {% if category == 'art' %}selected{% endif %}>Art</option>
+                <option value="business" {% if category == 'business' %}selected{% endif %}>Business</option>
+                <option value="health" {% if category == 'health' %}selected{% endif %}>Health</option>
+                <option value="cooking" {% if category == 'cooking' %}selected{% endif %}>Cooking</option>
+                <option value="crafts" {% if category == 'crafts' %}selected{% endif %}>Crafts</option>
+                <option value="sports" {% if category == 'sports' %}selected{% endif %}>Sports</option>
+                <option value="academic" {% if category == 'academic' %}selected{% endif %}>Academic</option>
+                <option value="other" {% if category == 'other' %}selected{% endif %}>Other</option>
+            </select>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+        </form>
+    </div>
+    
+    <!-- Skills Table -->
+    {% if skills.items %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>User</th>
+                    <th>Type</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for skill in skills.items %}
+                <tr>
+                    <td><a href="{{ url_for('skills.detail', skill_id=skill.id) }}">{{ skill.title }}</a></td>
+                    <td><a href="{{ url_for('main.user_profile', user_id=skill.owner.id) }}">{{ skill.owner.username }}</a></td>
+                    <td>
+                        <span class="badge {% if skill.skill_type == 'offered' %}badge-success{% else %}badge-warning{% endif %}">
+                            {{ skill.skill_type|title }}
+                        </span>
+                    </td>
+                    <td>{{ skill.category }}</td>
+                    <td>
+                        {% if skill.is_approved %}
+                        <span class="badge badge-success">Approved</span>
+                        {% else %}
+                        <span class="badge badge-warning">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ skill.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <div class="table-actions">
+                            {% if not skill.is_approved %}
+                            <a href="{{ url_for('admin.approve_skill', skill_id=skill.id) }}" class="btn btn-success btn-sm">
+                                <i class="fas fa-check"></i>
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('admin.reject_skill', skill_id=skill.id) }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-times"></i>
+                            </a>
+                            {% endif %}
+                            <form method="POST" action="{{ url_for('admin.delete_skill', skill_id=skill.id) }}" class="delete-form" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if skills.pages > 1 %}
+    <div class="pagination">
+        {% if skills.has_prev %}
+        <a href="{{ url_for('admin.skills', page=skills.prev_num, status=status, category=category) }}" class="page-item">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+        
+        {% for page_num in skills.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+                <a href="{{ url_for('admin.skills', page=page_num, status=status, category=category) }}" class="page-item {% if page_num == skills.page %}active{% endif %}">
+                    {{ page_num }}
+                </a>
+            {% else %}
+                <span class="page-item disabled">...</span>
+            {% endif %}
+        {% endfor %}
+        
+        {% if skills.has_next %}
+        <a href="{{ url_for('admin.skills', page=skills.next_num, status=status, category=category) }}" class="page-item">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon"><i class="fas fa-lightbulb"></i></div>
+        <p>No skills found.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

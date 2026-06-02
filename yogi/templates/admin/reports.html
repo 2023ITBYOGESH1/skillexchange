@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="flex-between mb-3">
+        <h1><i class="fas fa-flag"></i> User Reports</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <!-- Filters -->
+    <div class="search-container">
+        <form method="GET" action="{{ url_for('admin.reports') }}" class="d-flex gap-2">
+            <select name="status" class="form-control" style="width: 150px;">
+                <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="all" {% if status == 'all' %}selected{% endif %}>All</option>
+                <option value="resolved" {% if status == 'resolved' %}selected{% endif %}>Resolved</option>
+            </select>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+        </form>
+    </div>
+    
+    <!-- Reports Table -->
+    {% if reports.items %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Reporter</th>
+                    <th>Reported User</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports.items %}
+                <tr>
+                    <td><a href="{{ url_for('main.user_profile', user_id=report.reporter_id) }}">{{ report.reporter.username }}</a></td>
+                    <td><a href="{{ url_for('main.user_profile', user_id=report.reported_id) }}">{{ report.reported.username }}</a></td>
+                    <td>{{ report.reason[:50] }}...</td>
+                    <td>
+                        <span class="badge {% if report.status == 'pending' %}badge-warning{% elif report.status == 'resolved' %}badge-success{% else %}badge-info{% endif %}">
+                            {{ report.status|title }}
+                        </span>
+                    </td>
+                    <td>{{ report.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <div class="table-actions">
+                            <a href="{{ url_for('admin.report_detail', report_id=report.id) }}" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            {% if report.status == 'pending' %}
+                            <form method="POST" action="{{ url_for('admin.resolve_report', report_id=report.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ url_for('admin.ban_reported_user', report_id=report.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if reports.pages > 1 %}
+    <div class="pagination">
+        {% if reports.has_prev %}
+        <a href="{{ url_for('admin.reports', page=reports.prev_num, status=status) }}" class="page-item">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+        
+        {% for page_num in reports.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+                <a href="{{ url_for('admin.reports', page=page_num, status=status) }}" class="page-item {% if page_num == reports.page %}active{% endif %}">
+                    {{ page_num }}
+                </a>
+            {% else %}
+                <span class="page-item disabled">...</span>
+            {% endif %}
+        {% endfor %}
+        
+        {% if reports.has_next %}
+        <a href="{{ url_for('admin.reports', page=reports.next_num, status=status) }}" class="page-item">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon"><i class="fas fa-flag"></i></div>
+        <p>No reports found.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

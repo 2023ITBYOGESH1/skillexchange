@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="flex-between mb-3">
+        <h1><i class="fas fa-users"></i> Manage Users</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <!-- Search and Filters -->
+    <div class="search-container">
+        <form method="GET" action="{{ url_for('admin.users') }}" class="d-flex gap-2" style="flex-grow: 1;">
+            <input type="text" name="search" class="form-control" placeholder="Search users..." value="{{ search }}">
+            <select name="sort" class="form-control" style="width: 150px;">
+                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest</option>
+                <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>Oldest</option>
+                <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Rating</option>
+                <option value="banned" {% if sort == 'banned' %}selected{% endif %}>Banned</option>
+            </select>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </form>
+    </div>
+    
+    <!-- Users Table -->
+    {% if users.items %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Rating</th>
+                    <th>Skills</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users.items %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('main.user_profile', user_id=user.id) }}">{{ user.username }}</a>
+                        {% if user.is_admin %}<span class="badge badge-admin">Admin</span>{% endif %}
+                        {% if user.is_banned %}<span class="badge badge-danger">Banned</span>{% endif %}
+                    </td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        <div class="rating">
+                            {% for i in range(5) %}
+                                <i class="fas fa-star star {% if i < user.rating|int %}filled{% endif %}"></i>
+                            {% endfor %}
+                            <span>{{ "%.1f"|format(user.rating) }}</span>
+                        </div>
+                    </td>
+                    <td>{{ user.skills_count }}</td>
+                    <td>
+                        {% if user.is_banned %}
+                        <span class="text-danger">Banned</span>
+                        {% else %}
+                        <span class="text-success">Active</span>
+                        {% endif %}
+                    </td>
+{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'N/A' }}
+                    <td>
+                        <div class="table-actions">
+                            <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            {% if not user.is_admin %}
+                            {% if user.is_banned %}
+                            <a href="{{ url_for('admin.unban_user', user_id=user.id) }}" class="btn btn-success btn-sm">
+                                <i class="fas fa-unlock"></i>
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('admin.ban_user', user_id=user.id) }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-ban"></i>
+                            </a>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if users.pages > 1 %}
+    <div class="pagination">
+        {% if users.has_prev %}
+        <a href="{{ url_for('admin.users', page=users.prev_num, search=search, sort=sort) }}" class="page-item">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+        
+        {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+                <a href="{{ url_for('admin.users', page=page_num, search=search, sort=sort) }}" class="page-item {% if page_num == users.page %}active{% endif %}">
+                    {{ page_num }}
+                </a>
+            {% else %}
+                <span class="page-item disabled">...</span>
+            {% endif %}
+        {% endfor %}
+        
+        {% if users.has_next %}
+        <a href="{{ url_for('admin.users', page=users.next_num, search=search, sort=sort) }}" class="page-item">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon"><i class="fas fa-users"></i></div>
+        <p>No users found.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

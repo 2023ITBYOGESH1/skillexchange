@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Reviews for {{ user.username }} - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="flex-between mb-3">
+        <h1><i class="fas fa-star"></i> Reviews for {{ user.username }}</h1>
+        <a href="{{ url_for('main.user_profile', user_id=user.id) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Profile
+        </a>
+    </div>
+    
+    <!-- Rating Summary -->
+    <div class="card mb-3">
+        <div class="card-body text-center">
+            <div class="rating-display">
+                <div class="rating-number">{{ user.rating|default(0)|round(1) }}</div>
+                <div class="rating-stars">
+                    {% for i in range(5) %}
+                        <i class="fas fa-star star-large {% if i < user.rating|int %}filled{% endif %}"></i>
+                    {% endfor %}
+                </div>
+                <p class="text-muted">{{ reviews|length }} reviews</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Review Form (only if logged in and not own profile) -->
+    {% if current_user.is_authenticated and current_user.id != user.id %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3 class="card-title">Add a Review</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('main.add_review', user_id=user.id) }}">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    <label class="form-label">Rating</label>
+                    <div class="rating-input">
+                        {% for i in range(5, 0, -1) %}
+                        <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}" {% if form.rating.data == i %}checked{% endif %}>
+                        <label for="star{{ i }}"><i class="fas fa-star"></i></label>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    {{ form.comment.label(class="form-label") }}
+                    {{ form.comment(class="form-control", rows="3") }}
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Submit Review
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Reviews List -->
+    {% if reviews %}
+    <div class="reviews-list">
+        {% for review in reviews %}
+        <div class="card mb-2">
+            <div class="card-body">
+                <div class="d-flex gap-2 mb-2">
+                    <img src="{{ url_for('static', filename='uploads/' + review.reviewer.profile_picture) }}" alt="{{ review.reviewer.username }}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/40'">
+                    <div>
+                        <strong><a href="{{ url_for('main.user_profile', user_id=review.reviewer.id) }}">{{ review.reviewer.username }}</a></strong>
+                        <div class="rating">
+                            {% for i in range(5) %}
+                                <i class="fas fa-star star {% if i < review.rating %}filled{% endif %}"></i>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <span class="text-muted ms-auto">{{ review.created_at.strftime('%Y-%m-%d') }}</span>
+                </div>
+                {% if review.comment %}
+                <p>{{ review.comment }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon"><i class="fas fa-star"></i></div>
+        <p>No reviews yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

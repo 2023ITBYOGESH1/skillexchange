@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - P2P{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h1 class="mb-3"><i class="fas fa-cog"></i> Admin Dashboard</h1>
+    
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.total_users }}</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.total_skills }}</div>
+            <div class="stat-label">Total Skills</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.active_exchanges }}</div>
+            <div class="stat-label">Active Exchanges</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.pending_requests }}</div>
+            <div class="stat-label">Pending Requests</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.banned_users }}</div>
+            <div class="stat-label">Banned Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.pending_reports }}</div>
+            <div class="stat-label">Pending Reports</div>
+        </div>
+    </div>
+    
+    <!-- Quick Links -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-bolt"></i> Quick Actions</h3>
+        </div>
+        <div class="card-body">
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{{ url_for('admin.users') }}" class="btn btn-secondary">
+                    <i class="fas fa-users"></i> Manage Users
+                </a>
+                <a href="{{ url_for('admin.skills') }}" class="btn btn-secondary">
+                    <i class="fas fa-lightbulb"></i> Moderate Skills
+                </a>
+                <a href="{{ url_for('admin.reports') }}" class="btn btn-secondary">
+                    <i class="fas fa-flag"></i> View Reports
+                    {% if stats.pending_reports > 0 %}
+                    <span class="badge badge-danger">{{ stats.pending_reports }}</span>
+                    {% endif %}
+                </a>
+                <a href="{{ url_for('admin.activity') }}" class="btn btn-secondary">
+                    <i class="fas fa-history"></i> Activity Log
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Users -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-trophy"></i> Top Users</h3>
+        </div>
+        <div class="card-body">
+            {% if top_users %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Rating</th>
+                            <th>Skills</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in top_users %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('main.user_profile', user_id=user.id) }}">{{ user.username }}</a>
+                                {% if user.is_admin %}<span class="badge badge-admin">Admin</span>{% endif %}
+                            </td>
+                            <td>
+                                <div class="rating">
+                                    {% for i in range(5) %}
+                                        <i class="fas fa-star star {% if i < user.rating|int %}filled{% endif %}"></i>
+                                    {% endfor %}
+                                    <span>{{ "%.1f"|format(user.rating) }}</span>
+                                </div>
+                            </td>
+                            <td>{{ user.skills_count }}</td>
+                            <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No users yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-clock"></i> Recent Skills</h3>
+        </div>
+        <div class="card-body">
+            {% if recent_skills %}
+            <div class="skills-grid">
+                {% for skill in recent_skills %}
+                <div class="skill-card">
+                    <span class="skill-type {{ skill.skill_type }}">
+                        {% if skill.skill_type == 'offered' %}Teaching{% else %}Learning{% endif %}
+                    </span>
+                    <h4><a href="{{ url_for('skills.detail', skill_id=skill.id) }}">{{ skill.title }}</a></h4>
+                    <p class="text-muted">{{ skill.description[:100] }}...</p>
+                    <div class="skill-meta">
+                        <span class="skill-category">{{ skill.category }}</span>
+                        {% if not skill.is_approved %}
+                        <span class="badge badge-warning">Pending</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted">No skills yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

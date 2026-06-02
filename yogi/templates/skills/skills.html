@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% from "macros/avatar.html" import user_avatar %}
+
+{% block title %}Browse Skills - P2P{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="flex-between mb-3">
+        <h1><i class="fas fa-lightbulb"></i> Browse Skills</h1>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('skills.add') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Skill
+        </a>
+        {% endif %}
+    </div>
+    
+    <!-- Search and Filters -->
+    <div class="search-container">
+        <form method="GET" action="{{ url_for('skills.index') }}" class="d-flex gap-2" style="flex-grow: 1;">
+            <input type="text" name="q" class="form-control" placeholder="Search skills..." value="{{ request.args.get('q', '') }}">
+            <select name="category" class="form-control" style="width: 200px;">
+                <option value="">All Categories</option>
+                <option value="Technology" {% if request.args.get('category') == 'Technology' %}selected{% endif %}>Technology</option>
+                <option value="Languages" {% if request.args.get('category') == 'Languages' %}selected{% endif %}>Languages</option>
+                <option value="Music" {% if request.args.get('category') == 'Music' %}selected{% endif %}>Music</option>
+                <option value="Art & Design" {% if request.args.get('category') == 'Art & Design' %}selected{% endif %}>Art & Design</option>
+                <option value="Business" {% if request.args.get('category') == 'Business' %}selected{% endif %}>Business</option>
+                <option value="Health" {% if request.args.get('category') == 'Health' %}selected{% endif %}>Health</option>
+                <option value="Cooking" {% if request.args.get('category') == 'Cooking' %}selected{% endif %}>Cooking</option>
+                <option value="Crafts" {% if request.args.get('category') == 'Crafts' %}selected{% endif %}>Crafts</option>
+                <option value="Sports" {% if request.args.get('category') == 'Sports' %}selected{% endif %}>Sports</option>
+                <option value="Academic" {% if request.args.get('category') == 'Academic' %}selected{% endif %}>Academic</option>
+                <option value="Other" {% if request.args.get('category') == 'Other' %}selected{% endif %}>Other</option>
+            </select>
+            <select name="type" class="form-control" style="width: 150px;">
+                <option value="">All Types</option>
+                <option value="offered" {% if request.args.get('type') == 'offered' %}selected{% endif %}>Teaching</option>
+                <option value="wanted" {% if request.args.get('type') == 'wanted' %}selected{% endif %}>Learning</option>
+            </select>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </form>
+    </div>
+    
+    <!-- Category Quick Filters -->
+    {% set category_display_names = {
+        'technology': 'Technology',
+        'languages': 'Languages',
+        'music': 'Music',
+        'art & design': 'Art & Design',
+        'business': 'Business',
+        'health': 'Health',
+        'cooking': 'Cooking',
+        'crafts': 'Crafts',
+        'sports': 'Sports',
+        'academic': 'Academic',
+        'other': 'Other'
+    } %}
+    <div class="category-filters mb-3">
+        <a href="{{ url_for('skills.index', type=request.args.get('type', '')) }}" class="category-btn {% if not request.args.get('category') %}active{% endif %}">
+            All <span class="category-count">({{ category_counts.get('All', 0) }})</span>
+        </a>
+        <a href="{{ url_for('skills.index', category='Technology', type=request.args.get('type', '')) }}" class="category-btn {% if request.args.get('category') == 'Technology' %}active{% endif %}">
+            <i class="fas fa-laptop-code"></i> Technology <span class="category-count">({{ category_counts.get('Technology', 0) }})</span>
+        </a>
+        <a href="{{ url_for('skills.index', category='Languages', type=request.args.get('type', '')) }}" class="category-btn {% if request.args.get('category') == 'Languages' %}active{% endif %}">
+            <i class="fas fa-language"></i> Languages <span class="category-count">({{ category_counts.get('Languages', 0) }})</span>
+        </a>
+        <a href="{{ url_for('skills.index', category='Music', type=request.args.get('type', '')) }}" class="category-btn {% if request.args.get('category') == 'Music' %}active{% endif %}">
+            <i class="fas fa-music"></i> Music <span class="category-count">({{ category_counts.get('Music', 0) }})</span>
+        </a>
+        <a href="{{ url_for('skills.index', category='Art & Design', type=request.args.get('type', '')) }}" class="category-btn {% if request.args.get('category') == 'Art & Design' %}active{% endif %}">
+            <i class="fas fa-palette"></i> Art & Design <span class="category-count">({{ category_counts.get('Art & design', 0) }})</span>
+        </a>
+        <a href="{{ url_for('skills.index', category='Business', type=request.args.get('type', '')) }}" class="category-btn {% if request.args.get('category') == 'Business' %}active{% endif %}">
+            <i class="fas fa-briefcase"></i> Business <span class="category-count">({{ category_counts.get('Business', 0) }})</span>
+        </a>
+        <a href="{{ url_for('skills.index', category='Health', type=request.args.get('type', '')) }}" class="category-btn {% if request.args.get('category') == 'Health' %}active{% endif %}">
+            <i class="fas fa-heartbeat"></i> Health <span class="category-count">({{ category_counts.get('Health', 0) }})</span>
+        </a>
+        <a href="{{ url_for('skills.index', category='Cooking', type=request.args.get('type', '')) }}" class="category-btn {% if request.args.get('category') == 'Cooking' %}active{% endif %}">
+            <i class="fas fa-utensils"></i> Cooking <span class="category-count">({{ category_counts.get('Cooking', 0) }})</span>
+        </a>
+        <a href="{{ url_for('skills.index', category='Crafts', type=request.args.get('type', '')) }}" class="category-btn {% if request.args.get('category') == 'Crafts' %}active{% endif %}">
+            <i class="fas fa-hands"></i> Crafts <span class="category-count">({{ category_counts.get('Crafts', 0) }})</span>
+        </a>
+        <a href="{{ url_for('skills.index', category='Sports', type=request.args.get('type', '')) }}" class="category-btn {% if request.args.get('category') == 'Sports' %}active{% endif %}">
+            <i class="fas fa-football-ball"></i> Sports <span class="category-count">({{ category_counts.get('Sports', 0) }})</span>
+        </a>
+        <a href="{{ url_for('skills.index', category='Academic', type=request.args.get('type', '')) }}" class="category-btn {% if request.args.get('category') == 'Academic' %}active{% endif %}">
+            <i class="fas fa-graduation-cap"></i> Academic <span class="category-count">({{ category_counts.get('Academic', 0) }})</span>
+        </a>
+    </div>
+    
+    <!-- Skill Type Tabs -->
+    <div class="skill-type-tabs mb-3">
+        <a href="{{ url_for('skills.index', category=request.args.get('category', ''), type='') }}" class="type-tab {% if not request.args.get('type') %}active{% endif %}">
+            All Skills
+        </a>
+        <a href="{{ url_for('skills.index', category=request.args.get('category', ''), type='offered') }}" class="type-tab {% if request.args.get('type') == 'offered' %}active{% endif %}">
+            <i class="fas fa-chalkboard-teacher"></i> Teaching ({{ teaching_count }})
+        </a>
+        <a href="{{ url_for('skills.index', category=request.args.get('category', ''), type='wanted') }}" class="type-tab {% if request.args.get('type') == 'wanted' %}active{% endif %}">
+            <i class="fas fa-book-open"></i> Learning ({{ learning_count }})
+        </a>
+    </div>
+    
+    <!-- Skills Grid -->
+    {% if skills.items %}
+    <div class="skills-grid">
+        {% for skill in skills.items %}
+        <div class="skill-card">
+            <span class="skill-type {{ skill.skill_type }}">
+                {% if skill.skill_type == 'offered' %}<i class="fas fa-chalkboard-teacher"></i> Teaching{% else %}<i class="fas fa-book-open"></i> Learning{% endif %}
+            </span>
+            <h3><a href="{{ url_for('skills.detail', skill_id=skill.id) }}">{{ skill.title }}</a></h3>
+            <p>{{ skill.description }}</p>
+            <div class="skill-meta">
+                <span class="skill-category">{{ skill.category }}</span>
+                <span><i class="fas fa-user"></i> <a href="{{ url_for('main.user_profile', user_id=skill.owner.id) }}">{{ skill.owner.username }}</a></span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if skills.pages > 1 %}
+    <div class="pagination">
+        {% if skills.has_prev %}
+        <a href="{{ url_for('skills.index', page=skills.prev_num, q=request.args.get('q', ''), category=request.args.get('category', ''), type=request.args.get('type', '')) }}" class="page-item">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+        
+        {% for page_num in skills.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+                <a href="{{ url_for('skills.index', page=page_num, q=request.args.get('q', ''), category=request.args.get('category', ''), type=request.args.get('type', '')) }}" class="page-item {% if page_num == skills.page %}active{% endif %}">
+                    {{ page_num }}
+                </a>
+            {% else %}
+                <span class="page-item disabled">...</span>
+            {% endif %}
+        {% endfor %}
+        
+        {% if skills.has_next %}
+        <a href="{{ url_for('skills.index', page=skills.next_num, q=request.args.get('q', ''), category=request.args.get('category', ''), type=request.args.get('type', '')) }}" class="page-item">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon"><i class="fas fa-lightbulb"></i></div>
+        <p>No skills found. Be the first to add one!</p>
+        <a href="{{ url_for('skills.add') }}" class="btn btn-primary mt-2">Add Skill</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

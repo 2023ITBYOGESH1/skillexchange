@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature Preview - YOUR_NAME_HERE</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #1a365d;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        
+        .header p {
+            margin: 10px 0 0;
+            opacity: 0.8;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #1a365d;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #c9a227;
+        }
+        
+        .signature-display {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #c9a227;
+        }
+        
+        .signature-display img {
+            max-width: 300px;
+            height: auto;
+        }
+        
+        .signature-line {
+            width: 250px;
+            height: 2px;
+            background: #2d3748;
+            margin: 15px auto;
+        }
+        
+        .signature-label {
+            color: #4a5568;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .signature-name {
+            color: #1a365d;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        .form-style {
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #c9a227;
+        }
+        
+        .form-style label {
+            display: block;
+            color: #4a5568;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+        
+        .form-style .signature-box {
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+        }
+        
+        .form-style img {
+            max-width: 280px;
+        }
+        
+        .form-style .line {
+            flex: 1;
+            height: 2px;
+            background: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .info-text {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+        
+        .info-text ul {
+            padding-left: 20px;
+        }
+        
+        .info-text li {
+            margin-bottom: 8px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #c9a227;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-signature"></i> Signature Template</h1>
+            <p>Professional Instructor Signature for Certificates</p>
+        </div>
+        
+        <div class="content">
+            <!-- About Section -->
+            <div class="section">
+                <h2>About This Signature</h2>
+                <p class="info-text">
+                    This is a clean, typed signature for the name <strong>"YOUR_NAME_HERE"</strong> designed in a professional instructor style.
+                </p>
+                <p class="info-text">
+                    <span class="badge">Light & Elegant</span>
+                    <span class="badge">Handwritten Style</span>
+                    <span class="badge">Easy to Read</span>
+                </p>
+                <ul class="info-text">
+                    <li>Light, elegant font style that looks handwritten</li>
+                    <li>Professional appearance suitable for official certificates</li>
+                    <li>Centered horizontally for clean form layout</li>
+                    <li>Dark blue ink color (#1a365d) matching certificate theme</li>
+                </ul>
+            </div>
+            
+            <!-- Certificate Style -->
+            <div class="section">
+                <h2>Certificate Style (Centered)</h2>
+                <div class="signature-display">
+                    <img src="static/uploads/signature_prasanth_style.png" alt="Instructor Signature">
+                    <div class="signature-line"></div>
+                    <span class="signature-label">Instructor Signature</span>
+                    <p class="signature-name">YOUR_NAME_HERE</p>
+                </div>
+            </div>
+            
+            <!-- Form Style -->
+            <div class="section">
+                <h2>Form Style (Official Form)</h2>
+                <div class="form-style">
+                    <label>Instructor Signature:</label>
+                    <div class="signature-box">
+                        <img src="static/uploads/signature_prasanth_style.png" alt="Signature">
+                        <div class="line"></div>
+                    </div>
+                    <p style="color: #1a365d; font-weight: 600; margin-top: 10px; text-align: right;">YOUR_NAME_HERE</p>
+                </div>
+            </div>
+            
+            <!-- Alternative Simple Style -->
+            <div class="section">
+                <h2>Simple Signature (Alternative)</h2>
+                <div class="signature-display" style="padding: 20px;">
+                    <img src="static/uploads/signature_template.png" alt="Simple Signature" style="max-width: 250px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

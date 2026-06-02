@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Exchange Requests - P2P{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h1 class="mb-3"><i class="fas fa-handshake"></i> Exchange Requests</h1>
+    
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab active" data-target="received">
+            <i class="fas fa-inbox"></i> Received ({{ received|length }})
+        </button>
+        <button class="tab" data-target="sent">
+            <i class="fas fa-paper-plane"></i> Sent ({{ sent|length }})
+        </button>
+    </div>
+    
+    <!-- Received Requests -->
+    <div id="received" class="tab-content">
+        {% if received %}
+        <div class="requests-list">
+            {% for req in received %}
+            <div class="card mb-2">
+                <div class="d-flex gap-2">
+                    <img src="{{ url_for('static', filename='uploads/' + req.sender.profile_picture) }}" alt="{{ req.sender.username }}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/50'">
+                    <div style="flex-grow: 1;">
+                        <div class="d-flex gap-2 flex-between">
+                            <strong><a href="{{ url_for('main.user_profile', user_id=req.sender.id) }}">{{ req.sender.username }}</a></strong>
+                            <span class="badge {% if req.status == 'pending' %}badge-warning{% elif req.status == 'accepted' %}badge-success{% elif req.status == 'rejected' %}badge-danger{% else %}badge-info{% endif %}">
+                                {{ req.status|title }}
+                            </span>
+                        </div>
+                        <p class="text-muted mt-1">
+                            <i class="fas fa-exchange-alt"></i> 
+                            Wants to exchange: <strong>{{ req.sender_skill.title }}</strong> for <strong>{{ req.receiver_skill.title }}</strong>
+                        </p>
+                        <small class="text-muted">{{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        
+                        {% if req.status == 'pending' %}
+                        <div class="d-flex gap-2 mt-2">
+                            <form method="POST" action="{{ url_for('exchange.accept', request_id=req.id) }}">
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="fas fa-check"></i> Accept
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ url_for('exchange.reject', request_id=req.id) }}">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
+            <p>No received requests.</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Sent Requests -->
+    <div id="sent" class="tab-content" style="display: none;">
+        {% if sent %}
+        <div class="requests-list">
+            {% for req in sent %}
+            <div class="card mb-2">
+                <div class="d-flex gap-2">
+                    <img src="{{ url_for('static', filename='uploads/' + req.receiver.profile_picture) }}" alt="{{ req.receiver.username }}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/50'">
+                    <div style="flex-grow: 1;">
+                        <div class="d-flex gap-2 flex-between">
+                            <strong><a href="{{ url_for('main.user_profile', user_id=req.receiver.id) }}">{{ req.receiver.username }}</a></strong>
+                            <span class="badge {% if req.status == 'pending' %}badge-warning{% elif req.status == 'accepted' %}badge-success{% elif req.status == 'rejected' %}badge-danger{% else %}badge-info{% endif %}">
+                                {{ req.status|title }}
+                            </span>
+                        </div>
+                        <p class="text-muted mt-1">
+                            <i class="fas fa-exchange-alt"></i> 
+                            Offering: <strong>{{ req.sender_skill.title }}</strong> for <strong>{{ req.receiver_skill.title }}</strong>
+                        </p>
+                        <small class="text-muted">{{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        
+                        {% if req.status == 'pending' %}
+                        <div class="mt-2">
+                            <form method="POST" action="{{ url_for('exchange.cancel', request_id=req.id) }}" class="delete-form">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon"><i class="fas fa-paper-plane"></i></div>
+            <p>No sent requests.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

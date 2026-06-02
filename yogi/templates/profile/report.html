@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Report {{ user.username }} - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div style="max-width: 600px; margin: 0 auto;">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-flag"></i> Report User</h2>
+            </div>
+            <div class="card-body">
+                <p>You are about to report <strong>{{ user.username }}</strong>. Please provide a reason for your report.</p>
+                
+                <form method="POST" action="{{ url_for('main.report_user', user_id=user.id) }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="form-group">
+                        {{ form.reason.label(class="form-label") }}
+                        {{ form.reason(class="form-control", rows="5", placeholder="Please describe why you are reporting this user...") }}
+                        {% if form.reason.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.reason.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-flag"></i> Submit Report
+                        </button>
+                        <a href="{{ url_for('main.user_profile', user_id=user.id) }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

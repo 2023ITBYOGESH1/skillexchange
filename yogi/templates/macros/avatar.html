@@ -1,0 +1,28 @@
+{% macro user_avatar(user, size=40) %}
+{# Calculate color index based on username using simple hash #}
+{% set color_map = {
+    'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8,
+    'i': 1, 'j': 2, 'k': 3, 'l': 4, 'm': 5, 'n': 6, 'o': 7, 'p': 8,
+    'q': 1, 'r': 2, 's': 3, 't': 4, 'u': 5, 'v': 6, 'w': 7, 'x': 8,
+    'y': 1, 'z': 2, '0': 3, '1': 4, '2': 5, '3': 6, '4': 7, '5': 8
+} %}
+{% set first_char = user.username[0]|lower %}
+{% set color_index = color_map[first_char] if first_char in color_map else 1 %}
+
+{% if user.profile_picture and user.profile_picture != 'default.png' %}
+<img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" 
+     alt="{{ user.username }}"
+     style="width: {{ size }}px; height: {{ size }}px; border-radius: 50%; object-fit: cover;"
+     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+<span class="avatar-letter avatar-color-{{ color_index }}"
+      style="display: none; width: {{ size }}px; height: {{ size }}px; font-size: {{ (size/2.5)|round|int }}px;">
+    {{ user.username[0]|upper }}
+</span>
+{% else %}
+<span class="avatar-letter avatar-color-{{ color_index }}"
+      style="display: flex; width: {{ size }}px; height: {{ size }}px; font-size: {{ (size/2.5)|round|int }}px;">
+    {{ user.username[0]|upper }}
+</span>
+{% endif %}
+{% endmacro %}
+

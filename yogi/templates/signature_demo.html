@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature Demo - SkillSwap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .demo-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .certificate-preview {
+            background: white;
+            border: 4px solid #c9a227;
+            padding: 8px;
+            margin: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .certificate-inner {
+            border: 2px solid #1a365d;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            min-height: 500px;
+        }
+        
+        .corner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #c9a227;
+        }
+        
+        .corner-tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .corner-tr { top: 15px; right: 15px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+        .corner-br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+        
+        .cert-logo i {
+            font-size: 60px;
+            color: #1a365d;
+        }
+        
+        .cert-header h2 {
+            font-size: 2.5rem;
+            color: #1a365d;
+            letter-spacing: 4px;
+            font-weight: 700;
+        }
+        
+        .cert-header h3 {
+            font-size: 1.8rem;
+            color: #c9a227;
+            font-weight: 400;
+            font-style: italic;
+        }
+        
+        .cert-name {
+            font-size: 2.5rem;
+            color: #c9a227;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .cert-skill {
+            font-size: 1.5rem;
+            color: #1a365d;
+            font-weight: 600;
+        }
+        
+        /* Signature Area - Key part for the task */
+        .cert-signatures {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 40px;
+            padding-top: 20px;
+        }
+        
+        .signature {
+            text-align: center;
+        }
+        
+        .signature-image {
+            max-width: 200px;
+            max-height: 70px;
+            object-fit: contain;
+            margin-bottom: 8px;
+        }
+        
+        .signature-line {
+            width: 180px;
+            height: 1px;
+            background: #2d3748;
+            margin: 0 auto 8px;
+        }
+        
+        .signature-label {
+            font-size: 0.85rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        
+        .signature-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a365d;
+            margin-top: 5px;
+        }
+        
+        .info-box {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .info-box h5 {
+            color: #1a365d;
+            border-bottom: 2px solid #c9a227;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .signature-preview-card {
+            background: #f8f9fa;
+            border: 2px dashed #c9a227;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .signature-preview-card h6 {
+            color: #4a5568;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="text-center mb-4">
+            <h1><i class="fas fa-signature"></i> Signature Template Demo</h1>
+            <p class="text-muted">Professional Instructor Signature for SkillSwap Certificates</p>
+        </div>
+        
+        <!-- Info Boxes -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="info-box">
+                    <h5><i class="fas fa-info-circle"></i> About This Signature</h5>
+                    <p>This is a clean, typed signature template for the name <strong>"YOUR_NAME_HERE"</strong> designed in a professional instructor style.</p>
+                    <ul class="text-muted">
+                        <li>Light, elegant font style</li>
+                        <li>Handwritten but easy to read</li>
+                        <li>Centered horizontally</li>
+                        <li>Suitable for official certificates</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-box">
+                    <h5><i class="fas fa-file-image"></i> Available Signature Files</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check text-success"></i> <code>signature_template.png</code></li>
+                        <li class="mb-2"><i class="fas fa-check text-success"></i> <code>signature_prasanth_style.png</code></li>
+                    </ul>
+                    <p class="small text-muted mt-3">Location: <code>static/uploads/</code></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Certificate Preview with Signature -->
+        <div class="certificate-preview">
+            <div class="certificate-inner">
+                <!-- Corner Decorations -->
+                <div class="corner corner-tl"></div>
+                <div class="corner corner-tr"></div>
+                <div class="corner corner-bl"></div>
+                <div class="corner corner-br"></div>
+                
+                <!-- Header -->
+                <div class="cert-header mb-4">
+                    <div class="cert-logo">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h2>CERTIFICATE</h2>
+                    <h3>of Completion</h3>
+                </div>
+                
+                <!-- Sample Content -->
+                <p class="text-muted">This is to certify that</p>
+                <h1 class="cert-name">John Doe</h1>
+                <p class="text-muted">has successfully completed the skill learning session in</p>
+                <h2 class="cert-skill">Python Programming</h2>
+                <p class="text-muted mt-3">Instructed by <strong>YOUR_NAME_HERE</strong></p>
+                
+                <!-- Signature Section - The Main Feature -->
+                <div class="cert-signatures">
+                    <div class="signature">
+                        <img src="{{ url_for('static', filename='uploads/signature_prasanth_style.png') }}" 
+                             alt="Instructor Signature" 
+                             class="signature-image">
+                        <div class="signature-line"></div>
+                        <span class="signature-label">Instructor Signature</span>
+                        <p class="signature-name">YOUR_NAME_HERE</p>
+                    </div>
+                    <div class="signature">
+                        <div class="signature-line"></div>
+                        <span class="signature-label">Platform Signature</span>
+                        <p class="signature-name">SkillSwap Admin</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Alternative: Simple Form-style Signature -->
+        <div class="info-box mt-4">
+            <h5><i class="fas fa-file-alt"></i> Alternative: Simple Form Style</h5>
+            <div class="signature-preview-card">
+                <h6>Instructor Signature (Form Style)</h6>
+                <img src="{{ url_for('static', filename='uploads/signature_prasanth_style.png') }}" 
+                     alt="Signature" 
+                     style="max-width: 250px; max-height: 80px;">
+                <hr style="max-width: 280px; margin: 10px auto;">
+                <p class="text-muted small mb-0">YOUR_NAME_HERE</p>
+            </div>
+        </div>
+        
+        <!-- Back Link -->
+        <div class="text-center mt-4">
+            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Messages - P2P{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h1 class="mb-3"><i class="fas fa-comments"></i> Messages</h1>
+    
+    {% if conversations %}
+    <div class="chat-container">
+        <div class="chat-sidebar">
+            <div class="chat-header">Conversations</div>
+            <div class="chat-list">
+                {% for user_id, conv in conversations.items() %}
+                <a href="{{ url_for('chat.conversation', user_id=user_id) }}" class="chat-user">
+                    <img src="{{ url_for('static', filename='uploads/' + conv.user.profile_picture) }}" alt="{{ conv.user.username }}" class="chat-user-avatar" onerror="this.src='https://via.placeholder.com/40'">
+                    <div class="chat-user-info">
+                        <div class="chat-user-name">{{ conv.user.username }}</div>
+                        <div class="chat-user-preview">{{ conv.last_message.content[:30] }}...</div>
+                    </div>
+                    {% if conv.unread_count > 0 %}
+                    <span class="chat-unread">{{ conv.unread_count }}</span>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="chat-main">
+            <div class="empty-state">
+                <div class="empty-state-icon"><i class="fas fa-comments"></i></div>
+                <p>Select a conversation to start chatting</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon"><i class="fas fa-comments"></i></div>
+        <p>No conversations yet. Start chatting with other users!</p>
+        <a href="{{ url_for('skills.index') }}" class="btn btn-primary mt-2">Browse Skills</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

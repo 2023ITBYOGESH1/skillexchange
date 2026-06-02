@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}My Exchanges - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h1 class="mb-3"><i class="fas fa-exchange-alt"></i> My Exchanges</h1>
+    
+    <div class="stats-grid mb-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ active_count }}</div>
+            <div class="stat-label">Active Exchanges</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ exchanges|length }}</div>
+            <div class="stat-label">Total Exchanges</div>
+        </div>
+    </div>
+    
+    {% if exchanges %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Partner</th>
+                    <th>Your Skill</th>
+                    <th>Their Skill</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ex in exchanges %}
+                <tr>
+                    <td>
+                        {% if ex.sender_id == current_user.id %}
+                        <a href="{{ url_for('main.user_profile', user_id=ex.receiver_id) }}">{{ ex.receiver.username }}</a>
+                        {% else %}
+                        <a href="{{ url_for('main.user_profile', user_id=ex.sender_id) }}">{{ ex.sender.username }}</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if ex.sender_id == current_user.id %}
+                        <a href="{{ url_for('skills.detail', skill_id=ex.sender_skill.id) }}">{{ ex.sender_skill.title }}</a>
+                        {% else %}
+                        <a href="{{ url_for('skills.detail', skill_id=ex.receiver_skill.id) }}">{{ ex.receiver_skill.title }}</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if ex.sender_id == current_user.id %}
+                        <a href="{{ url_for('skills.detail', skill_id=ex.receiver_skill.id) }}">{{ ex.receiver_skill.title }}</a>
+                        {% else %}
+                        <a href="{{ url_for('skills.detail', skill_id=ex.sender_skill.id) }}">{{ ex.sender_skill.title }}</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge {% if ex.status == 'pending' %}badge-warning{% elif ex.status == 'accepted' %}badge-success{% elif ex.status == 'rejected' %}badge-danger{% else %}badge-info{% endif %}">
+                            {{ ex.status|title }}
+                        </span>
+                    </td>
+                    <td>{{ ex.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <a href="{{ url_for('exchange.request_detail', request_id=ex.id) }}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon"><i class="fas fa-exchange-alt"></i></div>
+        <p>No exchanges yet.</p>
+        <a href="{{ url_for('skills.index') }}" class="btn btn-primary mt-2">Browse Skills</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

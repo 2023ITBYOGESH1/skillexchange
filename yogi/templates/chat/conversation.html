@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Chat with {{ other_user.username }} - P2P{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="card">
+        <div class="card-header">
+            <a href="{{ url_for('chat.index') }}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <span style="margin-left: 1rem;">
+                <img src="{{ url_for('static', filename='uploads/' + other_user.profile_picture) }}" alt="{{ other_user.username }}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 0.5rem;" onerror="this.src='https://via.placeholder.com/30'">
+                <a href="{{ url_for('main.user_profile', user_id=other_user.id) }}">{{ other_user.username }}</a>
+            </span>
+        </div>
+        <div class="chat-messages" id="chat-messages" data-user-id="{{ other_user.id }}">
+            {% for msg in messages %}
+            <div class="message {% if msg.sender_id == current_user.id %}sent{% else %}received{% endif %}">
+                {{ msg.content }}
+                <div class="message-time">{{ msg.created_at.strftime('%H:%M') }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="chat-input">
+            <form method="POST" action="{{ url_for('chat.conversation', user_id=other_user.id) }}" id="send-message-form" style="display: flex; gap: 0.5rem; width: 100%;">
+                {{ form.hidden_tag() }}
+                <input type="text" name="content" class="form-control" placeholder="Type a message..." autocomplete="off">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Scroll to bottom on load
+document.addEventListener('DOMContentLoaded', function() {
+    const chatMessages = document.getElementById('chat-messages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Auto refresh every 5 seconds
+    setInterval(function() {
+        fetch('/chat/api/messages/{{ other_user.id }}')
+            .then(response => response.json())
+            .then(messages => {
+                const existingIds = Array.from(document.querySelectorAll('.message')).map(m => m.dataset.id);
+                
+                messages.forEach(function(msg) {
+                    if (!existingIds.includes(String(msg.id))) {
+                        const msgDiv = document.createElement('div');
+                        msgDiv.className = 'message ' + (msg.sender_id == {{ current_user.id }} ? 'sent' : 'received');
+                        msgDiv.dataset.id = msg.id;
+                        msgDiv.innerHTML = msg.content + '<div class="message-time">' + msg.created_at.split(' ')[1].split(':').slice(0,2).join(':') + '</div>';
+                        chatMessages.appendChild(msgDiv);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                });
+            });
+    }, 5000);
+});
+</script>
+{% endblock %}
+

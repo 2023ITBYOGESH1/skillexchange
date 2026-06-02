@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% from "macros/avatar.html" import user_avatar %}
+
+{% block title %}{{ user.username }} - P2P{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        {{ user_avatar(user, 150) }}
+        <div class="profile-info">
+            <h1>
+                {{ user.username }}
+                {% if user.is_admin %}
+                <span class="badge badge-admin">Admin</span>
+                {% endif %}
+            </h1>
+            {% if user.location %}
+            <p><i class="fas fa-map-marker-alt"></i> {{ user.location }}</p>
+            {% endif %}
+            {% if user.bio %}
+            <p class="mt-2">{{ user.bio }}</p>
+            {% endif %}
+            
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <div class="profile-stat-value">{{ user.rating|default(0)|round(1) }}</div>
+                    <div class="profile-stat-label">Rating</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value">{{ skills_offered|length }}</div>
+                    <div class="profile-stat-label">Skills Offered</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value">{{ skills_wanted|length }}</div>
+                    <div class="profile-stat-label">Skills Wanted</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value">{{ user.exchanges_count }}</div>
+                    <div class="profile-stat-label">Exchanges</div>
+                </div>
+            </div>
+            
+            {% if current_user.is_authenticated and current_user.id != user.id %}
+            <div class="mt-3">
+                <a href="{{ url_for('chat.conversation', user_id=user.id) }}" class="btn btn-primary">
+                    <i class="fas fa-comments"></i> Message
+                </a>
+                {% if skills_offered %}
+                <a href="{{ url_for('exchange.create', receiver_id=user.id, receiver_skill_id=skills_offered[0].id) }}" class="btn btn-secondary">
+                    <i class="fas fa-handshake"></i> Request Exchange
+                </a>
+                {% else %}
+                <span class="btn btn-secondary" title="User has no skills to exchange">
+                    <i class="fas fa-handshake"></i> Request Exchange
+                </span>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Reviews Section -->
+    {% if reviews %}
+    <div class="mb-4">
+        <h3><i class="fas fa-star text-warning"></i> Reviews</h3>
+        <div class="reviews-list mt-2">
+            {% for review in reviews[:5] %}
+            <div class="card mb-2">
+                <div class="d-flex gap-2">
+                    {{ user_avatar(review.reviewer, 40) }}
+                    <div>
+                        <div class="d-flex gap-2 flex-between">
+                            <strong><a href="{{ url_for('main.user_profile', user_id=review.reviewer.id) }}">{{ review.reviewer.username }}</a></strong>
+                            <div class="rating">
+                                {% for i in range(5) %}
+                                    <i class="fas fa-star star {% if i < review.rating %}filled{% endif %}"></i>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="text-muted mt-1">{{ review.comment }}</p>
+                        <small class="text-muted">{{ review.created_at.strftime('%Y-%m-%d') }}</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Skills Offered -->
+    <h3 class="mb-2"><i class="fas fa-chalkboard-teacher text-success"></i> Skills Offered</h3>
+    {% if skills_offered %}
+    <div class="skills-grid mb-4">
+        {% for skill in skills_offered %}
+        <div class="skill-card">
+            <span class="skill-type offered"><i class="fas fa-chalkboard-teacher"></i> Teaching</span>
+            <h3><a href="{{ url_for('skills.detail', skill_id=skill.id) }}">{{ skill.title }}</a></h3>
+            <p>{{ skill.description }}</p>
+            <div class="skill-meta">
+                <span class="skill-category">{{ skill.category }}</span>
+                {% if current_user.is_authenticated and current_user.id != user.id %}
+                <a href="{{ url_for('exchange.create', receiver_id=user.id, receiver_skill_id=skill.id) }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-handshake"></i> Exchange
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state mb-4">
+        <p>No skills offered yet.</p>
+    </div>
+    {% endif %}
+    
+    <!-- Skills Wanted -->
+    <h3 class="mb-2"><i class="fas fa-book-open text-warning"></i> Skills Wanted</h3>
+    {% if skills_wanted %}
+    <div class="skills-grid">
+        {% for skill in skills_wanted %}
+        <div class="skill-card">
+            <span class="skill-type wanted"><i class="fas fa-book-open"></i> Learning</span>
+            <h3><a href="{{ url_for('skills.detail', skill_id=skill.id) }}">{{ skill.title }}</a></h3>
+            <p>{{ skill.description }}</p>
+            <div class="skill-meta">
+                <span class="skill-category">{{ skill.category }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No skills wanted yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

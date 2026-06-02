@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Report Detail - Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="flex-between mb-3">
+        <h1><i class="fas fa-flag"></i> Report Details</h1>
+        <a href="{{ url_for('admin.reports') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Reports
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="mb-3">
+                <span class="badge {% if report.status == 'pending' %}badge-warning{% elif report.status == 'resolved' %}badge-success{% else %}badge-info{% endif %}">
+                    {{ report.status|title }}
+                </span>
+            </div>
+            
+            <h3>Reporter</h3>
+            <p><a href="{{ url_for('main.user_profile', user_id=report.reporter_id) }}">{{ report.reporter.username }}</a></p>
+            
+            <h3>Reported User</h3>
+            <p><a href="{{ url_for('main.user_profile', user_id=report.reported_id) }}">{{ report.reported.username }}</a></p>
+            
+            <h3>Reason</h3>
+            <p>{{ report.reason }}</p>
+            
+            <h3>Date</h3>
+            <p>{{ report.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            
+            {% if report.status == 'pending' %}
+            <div class="d-flex gap-2 mt-3">
+                <form method="POST" action="{{ url_for('admin.resolve_report', report_id=report.id) }}">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check"></i> Mark Resolved
+                    </button>
+                </form>
+                <form method="POST" action="{{ url_for('admin.ban_reported_user', report_id=report.id) }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-ban"></i> Ban User
+                    </button>
+                </form>
+                <form method="POST" action="{{ url_for('admin.dismiss_report', report_id=report.id) }}">
+                    <button type="submit" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Dismiss
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

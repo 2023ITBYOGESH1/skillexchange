@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - P2P{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="max-width: 600px; margin: 3rem auto;">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-edit"></i> Edit Profile</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('main.edit_profile') }}" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="form-group text-center">
+                        <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" alt="{{ current_user.username }}" id="image-preview" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;" onerror="this.src='https://via.placeholder.com/120'">
+                        <br>
+                        <label for="profile_picture" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-camera"></i> Change Photo
+                        </label>
+                        <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display: none;">
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ form.username.label(class="form-label") }}
+                        {{ form.username(class="form-control", placeholder="Enter your username") }}
+                        {% if form.username.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.username.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control", placeholder="Enter your email") }}
+                        {% if form.email.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.email.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ form.location.label(class="form-label") }}
+                        {{ form.location(class="form-control", placeholder="Enter your location") }}
+                        {% if form.location.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.location.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ form.bio.label(class="form-label") }}
+                        {{ form.bio(class="form-control", placeholder="Tell us about yourself", rows="4") }}
+                        {% if form.bio.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.bio.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Your Signature (for certificates)</label>
+                        {% if current_user.signature_image %}
+                        <div class="mb-2">
+                            <img src="{{ url_for('static', filename='uploads/' + current_user.signature_image) }}" alt="Current Signature" style="max-width: 200px; max-height: 80px; border: 1px solid #ddd; padding: 5px;">
+                            <p class="text-muted small mt-1">Current signature on file</p>
+                        </div>
+                        {% endif %}
+                        <label for="signature" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-pen"></i> {% if current_user.signature_image %}Change Signature{% else %}Upload Signature{% endif %}
+                        </label>
+                        <input type="file" id="signature" name="signature" accept="image/png,image/jpeg,image/jpg" style="display: none;">
+                        <small class="d-block text-muted mt-1">Upload a PNG or JPG image of your signature (recommended: transparent background)</small>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                        <a href="{{ url_for('main.profile') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
